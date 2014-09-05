@@ -7,7 +7,7 @@
     <% end %>
     <%= l(:label_drag_or_paste_from_clipboard) %></a></small><br />
 
-    <div class="applet-block">
+    <span class="applet-block">
       <object name="imageuploadapplet" id="imageuploadapplet" type="application/x-java-applet" width="400" height="200" style="display: none;">
         <param name="codebase" value="<%= AssetsHelper.plugin_asset_link('', :plugin => 'redmine_screenshot_paste') %>" />
         <param name="archive"  value="simageuploadapplet.jar" />
@@ -20,7 +20,7 @@
         <input type="text" class="screenshot-desc-field" name="attachments[screenshot1][description]" size="60" />
         <input type="hidden" name="attachments[screenshot1][content]" id="image" />
       </span>
-    </div>
+    </span>
   </p>
 
     <script type="text/javascript">
@@ -37,6 +37,7 @@
                   newBlock.find('.screenshot-desc-field').attr('name', 'attachments[screenshot' + counter + '][description]').val('');
                   newBlock.find('#image').attr('name', 'attachments[screenshot' + counter + '][content]').val('');
                   newBlock.insertAfter(oldBlock);
+                  $('<br />').insertBefore(newBlock);
               }
           }, 100);
       });
