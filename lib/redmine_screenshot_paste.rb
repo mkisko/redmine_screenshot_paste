@@ -26,11 +26,12 @@ module RedmineScreenshotPaste
     module ClassMethods
       def attach_files_with_screenshot(obj, attachments)
         if attachments.is_a?(Hash)
-          screenshot = attachments['screenshot']
-          if screenshot.is_a?(Hash)
-            file = UploadedScreenshot.new(screenshot.delete('content'),
-                                          screenshot.delete('name'))
-            screenshot['file'] = file
+          attachments.each do |key, attachment|
+            if key.start_with?('screenshot') && attachment.is_a?(Hash)
+              file = UploadedScreenshot.new(attachment.delete('content'),
+                                            attachment.delete('name'))
+              attachment['file'] = file
+            end
           end
         end
         attach_files_without_screenshot(obj, attachments)
@@ -41,11 +42,12 @@ module RedmineScreenshotPaste
       def params_attachments_with_screenshot
         attachments = params[:attachments]
         if attachments.is_a?(Hash)
-          screenshot = attachments['screenshot']
-          if screenshot.is_a?(Hash)
-            file = UploadedScreenshot.new(screenshot.delete('content'),
-                                          screenshot.delete('name'))
-            screenshot['file'] = file
+          attachments.each do |key, attachment|
+            if key.start_with?('screenshot') && attachment.is_a?(Hash)
+              file = UploadedScreenshot.new(attachment.delete('content'),
+                                            attachment.delete('name'))
+              attachment['file'] = file
+            end
           end
         end
       end

@@ -1,22 +1,44 @@
 <% if Redmine::VERSION::MAJOR == 2 %>
-    <p><label><%= l(:label_screenshot) %></label>
-      <% if Redmine::VERSION::MINOR == 0 %>
-          <small><a href="#" onclick="Element.show('imageuploadapplet'); Element.show('uploaded_screenshot_fields'); document.imageuploadapplet.getImageFromClipboad(); return false;">
-      <% else %>
-          <small><a href="#" onclick="$('#imageuploadapplet').show(); $('#uploaded_screenshot_fields').show(); document.imageuploadapplet.getImageFromClipboad(); return false;">
-      <% end %>
-      <%= l(:label_drag_or_paste_from_clipboard) %></a></small><br />
+  <p><label><%= l(:label_screenshot) %></label>
+    <% if Redmine::VERSION::MINOR == 0 %>
+      <small><a href="#" onclick="Element.show('imageuploadapplet'); Element.show('uploaded_screenshot_fields'); document.imageuploadapplet.getImageFromClipboad(); return false;">
+    <% else %>
+      <small><a href="#" onclick="$('#imageuploadapplet').show(); $('#uploaded_screenshot_fields').show(); document.imageuploadapplet.getImageFromClipboad(); return false;">
+    <% end %>
+    <%= l(:label_drag_or_paste_from_clipboard) %></a></small><br />
+
+    <div class="applet-block">
       <object name="imageuploadapplet" id="imageuploadapplet" type="application/x-java-applet" width="400" height="200" style="display: none;">
         <param name="codebase" value="<%= AssetsHelper.plugin_asset_link('', :plugin => 'redmine_screenshot_paste') %>" />
         <param name="archive"  value="simageuploadapplet.jar" />
         <param name="code"     value="imageuploadapplet.Main" />
       </object>
       <br />
-  <span id="uploaded_screenshot_fields" style="display:none;">
-    <small><%= l(:label_name_description) %>:</small><br />
-    <input type="text" name="attachments[screenshot][name]" value="screenshot" />
-    <input type="text" name="attachments[screenshot][description]" size="60" />
-  </span>
-    </p>
-    <input type="hidden" name="attachments[screenshot][content]" id="image" />
+      <span id="uploaded_screenshot_fields" style="display:none;">
+        <small><%= l(:label_name_description) %>:</small><br />
+        <input type="text" class="screenshot-name-field" name="attachments[screenshot1][name]" value="screenshot" />
+        <input type="text" class="screenshot-desc-field" name="attachments[screenshot1][description]" size="60" />
+        <input type="hidden" name="attachments[screenshot1][content]" id="image" />
+      </span>
+    </div>
+  </p>
+
+    <script type="text/javascript">
+      $(function(){
+          setInterval(function(){
+              if ($('#image').val() != '' && !processing) {
+                  var oldBlock = $('#image').parents('.applet-block');
+                  var newBlock = oldBlock.clone();
+                  var counter = $('.applet-block').length + 1;
+
+                  $('#image').attr('id', '');
+
+                  newBlock.find('.screenshot-name-field').attr('name', 'attachments[screenshot' + counter + '][name]').val('screenshot');
+                  newBlock.find('.screenshot-desc-field').attr('name', 'attachments[screenshot' + counter + '][description]').val('');
+                  newBlock.find('#image').attr('name', 'attachments[screenshot' + counter + '][content]').val('');
+                  newBlock.insertAfter(oldBlock);
+              }
+          }, 100);
+      });
+    </script>
 <% end %>
