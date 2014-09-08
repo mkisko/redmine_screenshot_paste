@@ -49,10 +49,8 @@
               newBlock.insertAfter($('.screenshot-item:last'));
               $('<br />').insertBefore(newBlock);
 
-              document.imageuploadapplet.init();
               $('#screenshot-name-field').val('screenshot' + (counter + 1));
               $('#screenshot-desc-field').val('');
-              $('#image').val('');
               return false;
           });
 
