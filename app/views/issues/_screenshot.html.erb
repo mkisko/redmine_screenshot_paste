@@ -1,9 +1,9 @@
 <% if Redmine::VERSION::MAJOR == 2 %>
   <p><label><%= l(:label_screenshot) %></label>
     <% if Redmine::VERSION::MINOR == 0 %>
-      <small><a href="#" onclick="Element.show('imageuploadapplet'); Element.show('uploaded_screenshot_fields'); document.imageuploadapplet.getImageFromClipboad(); return false;">
+      <small><a href="#" onclick="Element.show('imageuploadapplet'); Element.show('uploaded_screenshot_fields'); Element.show('attach-link'); document.imageuploadapplet.getImageFromClipboad(); return false;">
     <% else %>
-      <small><a href="#" onclick="$('#imageuploadapplet').show(); $('#uploaded_screenshot_fields').show(); document.imageuploadapplet.getImageFromClipboad(); return false;">
+      <small><a href="#" onclick="$('#imageuploadapplet').show(); $('#uploaded_screenshot_fields').show(); $('#attach-link').show(); document.imageuploadapplet.getImageFromClipboad(); return false;">
     <% end %>
     <%= l(:label_drag_or_paste_from_clipboard) %></a></small><br />
 
@@ -16,30 +16,50 @@
       <br />
       <span id="uploaded_screenshot_fields" style="display:none;">
         <small><%= l(:label_name_description) %>:</small><br />
-        <input type="text" class="screenshot-name-field" name="attachments[screenshot1][name]" value="screenshot" />
-        <input type="text" class="screenshot-desc-field" name="attachments[screenshot1][description]" size="60" />
-        <input type="hidden" name="attachments[screenshot1][content]" id="image" />
+        <input type="text" id="screenshot-name-field" value="screenshot1" />
+        <input type="text" id="screenshot-desc-field" size="60" />
+        <input type="hidden" id="image" />
+      </span>
+    </span>
+    <br />
+    <a href="#" id="attach-link" style="display: none;">Attach</a>
+    <span class="screenshot-list">
+      <span id="screenshot-item-template" class="screenshot-item" style="display: none;">
+        <input type="text" disabled="disabled" class="screenshot-name-field" name="attachments[screenshot1][name]" value="screenshot1" />
+        <input type="text" disabled="disabled" class="screenshot-desc-field" name="attachments[screenshot1][description]" size="60" />
+        <input type="hidden" disabled="disabled" class="screenshot-content-field" name="attachments[screenshot1][content]" />
+        <a href="#" class="screenshot-delete-link">Delete</a>
       </span>
     </span>
   </p>
 
     <script type="text/javascript">
       $(function(){
-          setInterval(function(){
-              if ($('#image').val() != '') {
-                  var oldBlock = $('#image').parents('.applet-block');
-                  var newBlock = oldBlock.clone();
-                  var counter = $('.applet-block').length + 1;
-
-                  $('#image').attr('id', '');
-
-                  newBlock.find('.screenshot-name-field').attr('name', 'attachments[screenshot' + counter + '][name]').val('screenshot');
-                  newBlock.find('.screenshot-desc-field').attr('name', 'attachments[screenshot' + counter + '][description]').val('');
-                  newBlock.find('#image').attr('name', 'attachments[screenshot' + counter + '][content]').val('');
-                  newBlock.insertAfter(oldBlock);
-                  $('<br />').insertBefore(newBlock);
+          $('#attach-link').click(function(){
+              var counter = parseInt($('.screenshot-item:last').attr('id').replace('screenshot-item-', ''), 10) + 1;
+              if (isNaN(counter)) {
+                  counter = 1;
               }
-          }, 100);
+
+              var newBlock = $('#screenshot-item-template').clone().attr('id', 'screenshot-item-' + counter).show();
+              newBlock.find('.screenshot-name-field').attr('name', 'attachments[screenshot' + counter + '][name]').attr('disabled', false).val($('#screenshot-name-field').val());
+              newBlock.find('.screenshot-desc-field').attr('name', 'attachments[screenshot' + counter + '][description]').attr('disabled', false).val($('#screenshot-desc-field').val());
+              newBlock.find('.screenshot-content-field').attr('name', 'attachments[screenshot' + counter + '][content]').attr('disabled', false).val($('#image').val());
+
+              newBlock.insertAfter($('.screenshot-item:last'));
+              $('<br />').insertBefore(newBlock);
+
+              $('#screenshot-name-field').val('screenshot' + (counter + 1));
+              $('#screenshot-desc-field').val('');
+              $('#image').val('');
+              return false;
+          });
+
+          $('.screenshot-list').delegate('.screenshot-delete-link', 'click', function(){
+              $(this).parents('.screenshot-item').prev('br').remove();
+              $(this).parents('.screenshot-item').remove();
+              return false;
+          });
       });
     </script>
 <% end %>
